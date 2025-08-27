@@ -45,17 +45,16 @@ public class OsmDbAccessor implements OsmDbAccessorContext {
 	private OsmDbTagsPreparation tagsPrepration;
 
 	public interface OsmDbVisitor {
-		
+
 		public void iterateEntity(Entity e, OsmDbAccessorContext ctx) throws SQLException;
-		
+
 	}
-	
+
 	public interface OsmDbTagsPreparation {
 
 		void processTags(Entity e);
 
 		default void newIteration(EntityType type) {} ;
-		
 	}
 
 	public OsmDbAccessor() {}
@@ -85,7 +84,7 @@ public class OsmDbAccessor implements OsmDbAccessorContext {
 			allWays += dbCreator.getAllWays();
 		}
 	}
-	
+
 	public void setTagsPrepration(OsmDbTagsPreparation tagsPrepration) {
 		this.tagsPrepration = tagsPrepration;
 	}
@@ -212,12 +211,12 @@ public class OsmDbAccessor implements OsmDbAccessorContext {
 			e.entityDataLoaded();
 		}
 	}
-	
+
 	public void setCreator(OsmDbCreator dbCreator) {
 		this.dbCreator = dbCreator;
-		
+
 	}
-	
+
 	@Override
 	public long convertId(Entity e) {
 		return dbCreator == null ? e.getId() : dbCreator.convertId(e);
@@ -247,7 +246,7 @@ public class OsmDbAccessor implements OsmDbAccessorContext {
 	}
 
 	public int iterateOverEntities(IProgress progress, EntityType type, OsmDbVisitor visitor) throws SQLException, InterruptedException {
-		return iterateOverEntities(progress, type, visitor, true);
+		return iterateOverEntities(progress, type, visitor, false);
 	}
 
 	public int iterateOverEntities(IProgress progress, EntityType type, OsmDbVisitor visitor, boolean realCounts) throws SQLException, InterruptedException {

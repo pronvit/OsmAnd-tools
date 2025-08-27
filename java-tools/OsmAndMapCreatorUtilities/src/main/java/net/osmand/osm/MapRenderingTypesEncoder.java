@@ -430,12 +430,16 @@ public class MapRenderingTypesEncoder extends MapRenderingTypes {
 			tags = new LinkedHashMap<>(tags);
 			for (String key : socketTypes.keySet()) {
 				String val = tags.get(key);
-				String socketType = parseSocketType(key);
-				String socketParam = parseSocketParam(key);
-				if (val != null && socketType != null && socketParam != null) {
-					String newKey = "osmand_socket_" + socketType + "_" + socketParam;
-					tags.put(newKey, filterValues(val, socketTypes.get(key)));
-				}
+                if (val != null) {
+                    String socketType = parseSocketType(key);
+                    if (socketType != null) {
+                        String socketParam = parseSocketParam(key);
+                        if (socketParam != null) {
+                            String newKey = "osmand_socket_" + socketType + "_" + socketParam;
+                            tags.put(newKey, filterValues(val, socketTypes.get(key)));
+                        }
+                    }
+                }
 			}
 		}
 		return tags;
@@ -836,19 +840,19 @@ public class MapRenderingTypesEncoder extends MapRenderingTypes {
 			List<EntityConvert> list = convertTags.get(e.getKey());
 			if (list != null) {
 				for (EntityConvert ec : list) {
-					String skipMsg = null;
-					if (skipMsg == null && ec.type != filterTransform) {
-						skipMsg = " transform " + filterTransform + "!= " + ec.type + ";";
+                    boolean skip = false;
+					if (!skip && ec.type != filterTransform) {
+						skip = true;
 					}
-					if (skipMsg == null && !ec.applyToType.contains(filterProcessingType)) {
-						skipMsg = " appFilter " + ec.applyToType + ";";
+					if (!skip && !ec.applyToType.contains(filterProcessingType)) {
+						skip = true;
 					}
-					if (skipMsg == null && !checkConvertValue(ec.fromTag, e.getValue())) {
-						skipMsg = " value mismatch " + e.getValue();
+					if (!skip && !checkConvertValue(ec.fromTag, e.getValue())) {
+						skip = true;
 					}
-					if (skipMsg != null) {
+					if (skip) {
 						if (ec.verbose) {
-							log.info("Skip entity convert from '" + ec.fromTag + "' to " + tags + " in " + filterProcessingType + skipMsg);
+							log.info("Skip entity convert from '" + ec.fromTag + "' to " + tags + " in " + filterProcessingType);
 						}
 					} else {
 						String verbose = null;

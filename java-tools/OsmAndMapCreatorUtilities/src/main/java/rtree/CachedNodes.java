@@ -16,6 +16,8 @@ import java.util.*;
 import gnu.trove.map.hash.TLongObjectHashMap;
 
 import java.io.*;
+
+import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import rtree.seeded.SdNode;
 /**
    <b>A circular linked list of cached nodes using hashtable ?!!</b>
@@ -35,10 +37,10 @@ class BufferHeader
   long recent;//the most recently inserted node
   long last;//the least recently inserted node
   int size;//max size of the link list
-  TLongObjectHashMap<NodeValue> cache;
+  LongObjectHashMap<NodeValue> cache;
 //  Hashtable cache;
-  
-  BufferHeader(int size,TLongObjectHashMap<NodeValue> ch)
+
+  BufferHeader(int size, LongObjectHashMap<NodeValue> ch)
   {
     this.cache = ch;
     this.size = size;
@@ -48,8 +50,7 @@ class BufferHeader
     throws NodeWriteException
   {
     //if(!RTree.writeThr){
-    for (Iterator<NodeValue> it = cache.valueCollection().iterator(); it.hasNext();){
-      NodeValue node = it.next();
+    for (NodeValue node : cache.values()){
       node.node.flush();
     } // end of for (Iterator  = .iterator(); .hasNext();)
     //}
@@ -218,14 +219,14 @@ public class CachedNodes
   private static final int SDNODE = 1;
   public static final int MAX_CACHE_SHIFT = 13;
 //  Hashtable cache;
-  TLongObjectHashMap<NodeValue> cache;
+  LongObjectHashMap<NodeValue> cache;
   BufferHeader buffHeader;
   int size = Node.CACHE_SIZE;
   CachedNodes()
   {
     //System.out.println("CachedNodes : cache called");
 //    cache = new Hashtable(Node.CACHE_SIZE+1,1);
-	  cache = new TLongObjectHashMap<NodeValue>(Node.CACHE_SIZE+1, 1);
+	  cache = new LongObjectHashMap<NodeValue>(Node.CACHE_SIZE+1);
     buffHeader = new BufferHeader(Node.CACHE_SIZE,cache);
     size = Node.CACHE_SIZE;
   }
@@ -237,7 +238,7 @@ public class CachedNodes
     if(size < 0)
       throw new IllegalArgumentException("CachedNodes:: size is less than zero");
 //    cache = new Hashtable(size+1,1);
-    cache = new TLongObjectHashMap<NodeValue>(size+1, 1);
+    cache = new LongObjectHashMap<NodeValue>(size+1);
     buffHeader = new BufferHeader(size, cache);
     this.size = size;
   }
@@ -248,7 +249,7 @@ public class CachedNodes
       throw new IllegalArgumentException("CachedNodes:: size is less than zero");
     removeAll();
 //    cache = new Hashtable(size+1,1);
-    cache = new TLongObjectHashMap<NodeValue>(size+1, 1);
+    cache = new LongObjectHashMap<NodeValue>(size+1);
     buffHeader = new BufferHeader(size, cache);
     this.size = size;
   }

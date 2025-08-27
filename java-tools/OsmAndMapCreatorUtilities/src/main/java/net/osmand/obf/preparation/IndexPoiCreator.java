@@ -203,7 +203,7 @@ public class IndexPoiCreator extends AbstractIndexPartCreator {
 				icc.bboxFilter.logEntityWithAmenity(e, tempAmenityList.get(0));
                 return;
             }
-			
+
 			List<LatLon> relationCenters = Collections.singletonList(null); // [null] means single amenity point
 			StringBuilder memberIds = new StringBuilder();
 			QuadRect latLonBbox = OsmMapUtils.indexPoiBboxForSearch(tags) ? new QuadRect() : null;
@@ -335,7 +335,7 @@ public class IndexPoiCreator extends AbstractIndexPartCreator {
 						if (centers.get(0) == null) {
 							Relation memberRel = (Relation) members.getEntity();
 							ctx.loadEntityRelation(memberRel);
-							centers = Collections.singletonList(OsmMapUtils.getCenter(memberRel, true));
+							centers = Collections.singletonList(OsmMapUtils.getCenter(memberRel));
 						}
 					}
 				}
@@ -1117,14 +1117,14 @@ public class IndexPoiCreator extends AbstractIndexPartCreator {
 			while (it.hasNext()) {
 				Entry<PoiAdditionalType, String> e = it.next();
 				String tag = e.getKey().getTag();
-				if ((ObfConstants.isTagIndexedForSearchAsName(tag))
+				if ((tag.contains("name") || tag.equals("brand"))
 						&& !"name:en".equals(tag)) {
 					if (otherNames == null) {
 						otherNames = new TreeMap<String, String>();
 					}
 					otherNames.putIfAbsent(e.getValue(), MapObject.isNameLangTag(tag) ? tag.substring("name:".length()) : null);
 				}
-				if (settings.charsToBuildPoiIdNameIndex > 0 && ObfConstants.isTagIndexedForSearchAsId(tag)) {
+				if (settings.charsToBuildPoiIdNameIndex > 0 && (tag.equals(Amenity.WIKIDATA) || tag.equals(Amenity.ROUTE_ID))) {
 					if (idNames == null) {
 						idNames = new TreeSet<String>();
 					}
